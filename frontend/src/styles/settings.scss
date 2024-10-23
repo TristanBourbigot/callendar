@@ -8,3 +8,15 @@
 // @use 'vuetify/settings' with (
 //   $color-pack: false
 // );
+
+*{
+    margin: 0px;
+    padding: 0px;
+}
+
+.full-height {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
