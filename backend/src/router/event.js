@@ -1,7 +1,7 @@
 import express from 'express';
 import {CustomError} from "../middleware/CustomError";
 import {asyncHandler} from "../utils/asyncHandler";
-import {events, eventByID, createEvent, castSuggestionToEvent, deleteEvent} from "../controller/event.js";
+import {events, eventByID, createEvent, deleteEvent} from "../controller/event.js";
 
 export const eventRouter = express.Router();
 
@@ -53,15 +53,6 @@ eventRouter.post('/createEvent/', asyncHandler (async(req, res) => {
         throw new CustomError(400, "router/event.js - POST - /createEvent/ - Can't get User email.");
     }
 
-}));
-
-eventRouter.post('/suggestionToEvent/:suggestionId', asyncHandler (async (req, res) => {
-    if(req.params.suggestionId){
-        await castSuggestionToEvent(req.params.suggestionId);
-        res.status(200);
-    }else{
-        throw new CustomError(400, "router/envent.js - POST - /suggestionToEvent/:suggestionId - Missing suggestion ID.");
-    }
 }));
 
 eventRouter.delete('/deleteEvent/:eventId', asyncHandler(async (req,res) => {

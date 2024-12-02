@@ -1,9 +1,7 @@
 import {AppDataSource} from "../data/connection.js";
 import {CustomError} from "../middleware/CustomError.js";
-import {Suggestion} from "../data/entity/Suggestion.js";
 
 const eventRepository = AppDataSource.getRepository("Event");
-const suggestionRepository = AppDataSource.getRepository("Suggestion");
 const userRepository = AppDataSource.getRepository("User");
 
 export async function events(){
@@ -45,41 +43,6 @@ export function createEvent(userEmail, eventTitle, eventDescription, eventStart,
         });
     }else{
         throw new CustomError(400, "controller/event.js - createEvent - Can't find matching User for email '" + userEmail + "'.");
-    }
-}
-
-export async function castSuggestionToEvent(suggestionId){
-    let suggestion = await suggestionRepository.findOne({
-        where: {id: suggestionId}
-    });
-
-    if(suggestion){
-        let event = {
-            title: suggestion.title,
-            description: suggestion.description,
-            start: suggestion.start,
-            end: suggestion.end,
-            place: suggestion.place,
-            category: suggestion.category,
-            allDay: suggestion.allDay,
-            email: suggestion.email
-        };
-
-        eventRepository
-            .save(event)
-            .then(function(){
-                console.log('>>> INFO : Event successfully created.');
-            });
-
-        await AppDataSource
-            .createQueryBuilder()
-            .delete()
-            .from(Suggestion)
-            .where("id = :id", { id: suggestionId })
-            .execute();
-
-    }else{
-        throw new CustomError(400, "controller/event.js - Can't find a matching suggestion for the id '" + suggestionId + "'.");
     }
 }
 
