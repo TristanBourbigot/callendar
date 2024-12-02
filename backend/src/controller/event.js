@@ -4,6 +4,7 @@ import {Suggestion} from "../data/entity/Suggestion.js";
 
 const eventRepository = AppDataSource.getRepository("Event");
 const suggestionRepository = AppDataSource.getRepository("Suggestion");
+const userRepository = AppDataSource.getRepository("User");
 
 export async function events(){
     return await eventRepository.find();
@@ -43,7 +44,7 @@ export function createEvent(userEmail, eventTitle, eventDescription, eventStart,
             console.log('>>> INFO : Event successfully created.');
         });
     }else{
-        throw new CustomError(400, "controller/event.js - createEvent - Can't find mathcing User for email '" + userEmail + "'.");
+        throw new CustomError(400, "controller/event.js - createEvent - Can't find matching User for email '" + userEmail + "'.");
     }
 }
 
