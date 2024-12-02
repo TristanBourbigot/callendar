@@ -1,6 +1,7 @@
 import express from 'express';
 import {AppDataSource} from './data/connection.js';
 import {userRouter} from "./router/user.js";
+import cors from 'cors';
 
 const app = express();
 const port = 2999;
@@ -15,6 +16,11 @@ AppDataSource.initialize().then(async() => {
    console.error('>>> ERROR : Failed to connect to Database.');
    console.error(error);
 });
+
+app.use(cors({
+   origin: 'http://localhost:3000',
+   credentials: true
+ }));
 
 app.get('/', function(req, res){
    // @TODO

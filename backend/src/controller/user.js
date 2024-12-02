@@ -36,11 +36,10 @@ function asyncCrypt(passedPasswd) {
 
 export async function connectUser(userEmail, passedPasswd){
     try{
-        let user = userRepository.find({
+        let user = await userRepository.find({
             where: {email: userEmail},
         })
-
-        const data = await asyncCompare(passedPasswd, user?.password ?? "");
+        const data = await asyncCompare(passedPasswd, user ? user[0]?.password ?? "" : "");
         return jwt.sign({...user}, SECRET);
     }catch (e) {
         throw new CustomError(500, 'controller/user.js - connectUser - ' + e.message);
@@ -55,7 +54,7 @@ export async function createUser(userEmail, firstName, lastName, userPasswd) {
             lastName: lastName,
             password: await asyncCrypt(userPasswd),
         };
-
+        console.log(user);
         userRepository
             .save(user)
             .then(function(){
@@ -66,4 +65,3 @@ export async function createUser(userEmail, firstName, lastName, userPasswd) {
         throw new CustomError(500, 'controller/user.js - createUser - ' + e.message);
     }
 }
-
