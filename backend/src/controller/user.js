@@ -1,8 +1,8 @@
-const User = require('../data/entity/User');
-const AppDataSource = require('../data/connection.js');
-const bcrypt = require('bcrypt');
-const jwt = require('jsonwebtoken');
-const {CustomError} = require("../middleware/CustomError");
+import {User} from '../data/entity/User.js';
+import {AppDataSource} from '../data/connection.js';
+import bcrypt from 'bcrypt';
+import jwt from 'jsonwebtoken';
+import {CustomError} from "../middleware/CustomError.js";
 
 const saltRounds = 10;
 const SECRET = '1234';

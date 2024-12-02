@@ -1,4 +1,4 @@
-import express from "express";
+import express from 'express';
 import {connectUser, createUser} from "../controller/user.js";
 import {CustomError} from "../middleware/CustomError.js";
 import {asyncHandler} from "../utils/asyncHandler.js";

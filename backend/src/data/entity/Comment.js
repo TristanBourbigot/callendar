@@ -1,9 +1,9 @@
-const {EntitySchema} = require("typeorm");
-const User = require("./User")
-const Event = require("./Event")
-const Suggestion = require("./Suggestion")
+import {EntitySchema} from 'typeorm';
+import {User} from "./User.js";
+import {Event} from "./Event.js";
+import {Suggestion} from "./Suggestion.js";
 
-module.exports = new EntitySchema ({
+export const Comment =  new EntitySchema ({
     name: 'Comment',
     tableName: 'comments',
     columns: {
