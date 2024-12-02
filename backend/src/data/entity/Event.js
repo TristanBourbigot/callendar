@@ -19,9 +19,18 @@ export const Event = new EntitySchema ({
         place: {
             type: 'varchar',
         },
-        moment: {
+        start: {
             type: 'varchar',
         },
+        end: {
+            type: 'varchar',
+        },
+        category: {
+            type: 'varchar'
+        },
+        allDay: {
+            type: 'boolean'
+        }
     },
     relations: {
         users: {
