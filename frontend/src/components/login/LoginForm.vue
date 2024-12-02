@@ -1,5 +1,6 @@
 <script lang="ts">
     import { defineComponent } from 'vue'
+    import axios from 'axios';
 
     export default defineComponent({
         data() {
@@ -7,6 +8,7 @@
                 visible: false,
                 isHoveringPass: false,
                 isHoveringSign: false,
+                errorMessages: false,
                 user:{
                     email: "",
                     password: ""
@@ -15,7 +17,14 @@
         },
         methods: {
             login: function() {
-                console.log(this.user);
+                axios.get('http://localhost:2999/api/user/login', {email: this.user.email, password: this.user.password})
+                    .then(response => {
+                        document.cookie = `jwt=${response.data.token};max-age=7200;path=/`;
+                        window.location.href = '/';
+                }).catch(error => {
+                    this.errorMessages = true;
+                    console.log(error);
+                })
             }
         }
     })
@@ -36,6 +45,14 @@
                 max-width="228"
                 src="/src/assets/logo.png"
             ></v-img>
+
+            <v-alert
+                v-if="errorMessages" 
+                density="compact"
+                text="Identifiant ou mot de passe incorrect"
+                type="error"
+            ></v-alert>
+
             <div class="text-subtitle-1 text-medium-emphasis">Email</div>
     
             <v-text-field
