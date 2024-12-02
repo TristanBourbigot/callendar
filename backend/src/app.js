@@ -1,6 +1,6 @@
-const AppDataSource = require('./data/connection.js');
-const express = require('express');
-const {userRouter} = require("./router/user");
+import express from 'express';
+import {AppDataSource} from './data/connection.js';
+import {userRouter} from "./router/user.js";
 
 const app = express();
 const port = 2999;
