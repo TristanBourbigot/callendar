@@ -17,7 +17,7 @@
         },
         methods: {
             login: function() {
-                axios.get('http://localhost:2999/api/user/login', {email: this.user.email, password: this.user.password})
+                axios.post(import.meta.env.VITE_API_URL + '/user/login', {email: this.user.email, password: this.user.password})
                     .then(response => {
                         document.cookie = `jwt=${response.data.token};max-age=7200;path=/`;
                         window.location.href = '/';
@@ -62,20 +62,6 @@
             prepend-inner-icon="mdi-email-outline"
             variant="outlined"
             ></v-text-field>
-    
-            <div class="text-subtitle-1 text-medium-emphasis d-flex align-center justify-space-between" >
-            Mot de passe    
-                <a
-                    @mouseover="isHoveringPass = true" 
-                    @mouseout="isHoveringPass = false" 
-                    class="text-caption text-decoration-none"
-                    :class="{'text-secondary-link': !isHoveringPass, 'text-secondary-link-hover': isHoveringPass  }"
-                    style="color: `secondary-link`"
-                    href="#"
-                >
-                    mot de passe oublier ?
-                </a>
-            </div>
     
             <v-text-field
             v-model="user.password"
