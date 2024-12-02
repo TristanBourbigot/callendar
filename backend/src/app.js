@@ -3,7 +3,7 @@ const express = require('express');
 const {userRouter} = require("./router/user");
 
 const app = express();
-const port = 3000;
+const port = 2999;
 
 // Don't forget your bag, Daniel.
 // I won't, Herbert.
@@ -17,7 +17,7 @@ AppDataSource.initialize().then(async() => {
 });
 
 app.get('/', function(req, res){
-   res.send("Hello world!");
+   // @TODO
 });
 
 app.use("/api/v1/user", userRouter);
