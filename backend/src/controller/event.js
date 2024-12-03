@@ -5,7 +5,9 @@ import {Event} from "../data/entity/Event.js";
 const eventRepository = AppDataSource.getRepository("Event");
 
 export async function events(){
-    return await eventRepository.find();
+    let events = await eventRepository.find();
+    console.log(events);
+    return events;
 }
 
 export async function eventByID(eventId){

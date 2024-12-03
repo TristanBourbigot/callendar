@@ -49,9 +49,13 @@ export async function connectUser(userEmail, passedPasswd){
 export async function createUser(userEmail, firstName, lastName, userPasswd) {
     try{
 
-        let existingUser = userRepository.findOne({
+        let existingUser = await userRepository.findOne({
             where: {email: userEmail}
         });
+
+        console.log(">>> USER CONTENT START");
+        console.log(existingUser);
+        console.log(">>> USER CONTENT END");
 
         if(! existingUser){
             let user = {

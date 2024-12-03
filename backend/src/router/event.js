@@ -9,14 +9,14 @@ export const eventRouter = express.Router();
 
 eventRouter.use(auth);
 
-eventRouter.get('/', (req, res) => {
-    const eventsList = events();
+eventRouter.get('/', asyncHandler (async (req, res) => {
+    const eventsList = await events();
     res.status(200).json(eventsList);
-});
+}));
 
 eventRouter.get('/id/:id', asyncHandler (async(req, res) => {
     if(req.params.id){
-        const event = eventByID(req.params.id);
+        const event = await eventByID(req.params.id);
         res.status(200).json(event);
     }else{
         throw new CustomError(400, "router/events.js - GET - /id/:id - Missing Event id.");
