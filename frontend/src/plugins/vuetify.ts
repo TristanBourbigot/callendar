@@ -10,6 +10,7 @@ import 'vuetify/styles'
 
 // Composables
 import { createVuetify } from 'vuetify'
+import { fr } from 'vuetify/locale';
 
 // https://vuetifyjs.com/en/introduction/why-vuetify/#feature-guides
 const callendarDarkTheme: ThemeDefinition = {
@@ -37,4 +38,9 @@ export default createVuetify({
       callendarDarkTheme,
     },
   },
+  locale: {
+    locale: 'fr',
+    fallback: 'fr',
+    messages: { fr }
+  }
 })
