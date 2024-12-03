@@ -1,7 +1,9 @@
 import express from 'express';
+import cors from 'cors';
 import {AppDataSource} from './data/connection.js';
 import {userRouter} from "./router/user.js";
-import cors from 'cors';
+import {eventRouter} from "./router/event.js";
+import {suggestionRouter} from "./router/suggestion.js";
 
 const app = express();
 const port = 2999;
@@ -27,6 +29,8 @@ app.get('/', function(req, res){
 });
 
 app.use("/api/v1/user", userRouter);
+app.use("/api/v1/event", eventRouter);
+app.use("/api/v1/suggestion", suggestionRouter);
 
 console.log(`>>> INFO : Listening on port ${port}`);
 app.listen(port);

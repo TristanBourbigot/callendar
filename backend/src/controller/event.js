@@ -1,8 +1,8 @@
 import {AppDataSource} from "../data/connection.js";
 import {CustomError} from "../middleware/CustomError.js";
+import {Event} from "../data/entity/Event.js";
 
 const eventRepository = AppDataSource.getRepository("Event");
-const userRepository = AppDataSource.getRepository("User");
 
 export async function events(){
     return await eventRepository.find();
@@ -16,16 +16,9 @@ export async function eventByID(eventId){
     });
 }
 
-export function createEvent(userEmail, eventTitle, eventDescription, eventStart, eventEnd, eventPlace, eventCategory, allDay){
+export async function createEvent(userEmail, eventTitle, eventDescription, eventStart, eventEnd, eventPlace, eventCategory, allDay){
 
-    let user = userRepository.findOne({
-        where : {
-            email: userEmail
-        }
-    });
-
-    if(user){
-        let event = {
+    const event = eventRepository.create({
         title: eventTitle,
         description: eventDescription,
         start: eventStart,
@@ -34,16 +27,9 @@ export function createEvent(userEmail, eventTitle, eventDescription, eventStart,
         category: eventCategory,
         allDay: allDay,
         email: userEmail
-        };
+    });
 
-    eventRepository
-        .save(event)
-        .then(function(){
-            console.log('>>> INFO : Event successfully created.');
-        });
-    }else{
-        throw new CustomError(400, "controller/event.js - createEvent - Can't find matching User for email '" + userEmail + "'.");
-    }
+    await eventRepository.insert(event);
 }
 
 export async function deleteEvent(eventId){

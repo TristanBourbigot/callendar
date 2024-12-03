@@ -1,9 +1,13 @@
 import express from 'express';
-import {CustomError} from "../middleware/CustomError";
-import {asyncHandler} from "../utils/asyncHandler";
+import {CustomError} from "../middleware/CustomError.js";
+import {asyncHandler} from "../utils/asyncHandler.js";
 import {events, eventByID, createEvent, deleteEvent} from "../controller/event.js";
+import {checkDates} from "../middleware/dates.js";
+import {auth} from "../middleware/auth.js";
 
 export const eventRouter = express.Router();
+
+eventRouter.use(auth);
 
 eventRouter.get('/', (req, res) => {
     const eventsList = events();
@@ -19,29 +23,36 @@ eventRouter.get('/id/:id', asyncHandler (async(req, res) => {
     }
 }));
 
-eventRouter.post('/createEvent/', asyncHandler (async(req, res) => {
-    if(req.user.dataValues.email){
+eventRouter.post('/createEvent/',asyncHandler (async(req, res) => {
+
+    if(req.user[0].email){
         if(req.body.title){
             if(req.body.description){
                 if(req.body.start){
-                    if(req.body.end && req.body.end > req.body.start){
-                        if(req.body.place){
-                            if(req.body.category){
-                                if(req.body.allDay){
-                                    await createEvent(req.user.dataValues.email, req.body.title, req.body.description, req.body.start, req.body.end, req.body.place, req.body.category, req.body.allDay);
-                                    res.status(200);
+                    if(req.body.end){
+                        if(checkDates(req.body.start,req.body.end)){
+                            if(req.body.place){
+                                if(req.body.category){
+                                    if(req.body.allDay){
+                                        await createEvent(req.user[0].email, req.body.title, req.body.description, req.body.start, req.body.end, req.body.place, req.body.category, req.body.allDay);
+                                        res.status(200);
+                                    }else{
+                                        throw new CustomError(400, "router/events.js - POST - /createEvent/ - Missing AllDay for the event.")
+                                    }
                                 }else{
-                                    throw new CustomError(400, "router/events.js - POST - /createEvent/ - Missing AllDay for the event.")
+                                    throw new CustomError(400, "router/events.js - POST - /createEvent/ - Missing category for the event.")
                                 }
                             }else{
-                                throw new CustomError(400, "router/events.js - POST - /createEvent/ - Missing category for the event.")
+                                throw new CustomError(400, "router/events.js - POST - /createEvent/ - Missing place for the event.");
                             }
                         }else{
-                            throw new CustomError(400, "router/events.js - POST - /createEvent/ - Missing place for the event.");
+                            throw new CustomError(400, "router/events.js - POST - /createEvent/ - The end of the event must be after the start of the event.");
                         }
+                    }else{
+                        throw new CustomError(400, "router/events.js - POST - /createEvent/ - Missing end time for the event.");
                     }
                 }else{
-                    throw new CustomError(400, "router/events.js - POST - /createEvent/ - Missing moment for the event.");
+                    throw new CustomError(400, "router/events.js - POST - /createEvent/ - Missing start time for the event.");
                 }
             }else{
                 throw new CustomError(400, "router/events.js - POST - /createEvent/ - Missing description for the event.");
