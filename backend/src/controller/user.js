@@ -48,20 +48,35 @@ export async function connectUser(userEmail, passedPasswd){
 
 export async function createUser(userEmail, firstName, lastName, userPasswd) {
     try{
-        let user = {
-            email: userEmail,
-            firstName: firstName,
-            lastName: lastName,
-            password: await asyncCrypt(userPasswd),
-        };
+
+        let existingUser = await userRepository.findOne({
+            where: {email: userEmail}
+        });
+
+        console.log(">>> USER CONTENT START");
+        console.log(existingUser);
+        console.log(">>> USER CONTENT END");
+
+        if(! existingUser){
+            let user = {
+                email: userEmail,
+                firstName: firstName,
+                lastName: lastName,
+                password: await asyncCrypt(userPasswd),
+            };
+
         console.log(user);
         userRepository
             .save(user)
             .then(function(){
                 console.log('>>> INFO : User successfully created.');
             });
+        }else{
+            throw new CustomError(400, 'controller/user.js - createUser - An account with this user already exists.');
+        }
+
     }catch (e) {
         console.error('>>> ERROR : Error while creating the user.');
-        throw new CustomError(500, 'controller/user.js - createUser - ' + e.message);
+        throw new CustomError(400, 'controller/user.js - createUser - ' + e.message);
     }
 }

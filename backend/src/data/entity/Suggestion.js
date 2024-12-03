@@ -18,8 +18,14 @@ export const Suggestion = new EntitySchema({
         place: {
             type: 'varchar',
         },
-        moment: {
+        start: {
             type: 'varchar',
+        },
+        end: {
+            type: 'varchar',
+        },
+        category: {
+            type: 'varchar'
         },
         maximalApprovalDate: {
             type: 'varchar'
