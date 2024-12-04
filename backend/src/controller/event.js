@@ -28,10 +28,10 @@ export async function createEvent(userEmail, eventTitle, eventDescription, event
         place: eventPlace,
         category: eventCategory,
         allDay: allDay,
-        email: userEmail
     });
 
     await eventRepository.insert(event);
+    return true;
 }
 
 export async function deleteEvent(eventId){
