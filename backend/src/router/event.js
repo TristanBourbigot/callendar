@@ -33,7 +33,7 @@ eventRouter.post('/createEvent/',asyncHandler (async(req, res) => {
                         if(checkDates(req.body.start,req.body.end)){
                             if(req.body.place){
                                 if(req.body.category){
-                                    if(req.body.allDay){
+                                    if(req.body.allDay !== null){
                                         await createEvent(req.user[0].email, req.body.title, req.body.description, req.body.start, req.body.end, req.body.place, req.body.category, req.body.allDay);
                                         res.status(200);
                                     }else{

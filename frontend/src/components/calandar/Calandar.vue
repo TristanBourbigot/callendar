@@ -52,10 +52,11 @@ export default defineComponent({
         .then(response => {
             console.log(response)
             const eventsList = response.data;
-            this.events = eventsList.map((event, index) => ({
+            this.events = eventsList.map((event) => ({
                 ...event,
-                id: index,
-                color: this.colors[event.title]
+                end: new Date(event.end),
+                start: new Date(event.startDate),
+                color: this.colors[event.category]
             }));
         })
         .catch(error => {
@@ -82,13 +83,7 @@ export default defineComponent({
             }
         })
         .then(response => {
-            console.log('Event successfully added:', response);
-            const eventsList = response.data;
-            this.events = eventsList.map((event, index) => ({
-                ...event,
-                id: index,
-                color: this.colors[event.title] || 'defaultColor'
-            }));
+            this.getEvents();
         })
         .catch(error => {
             console.error('Error adding event:', error);

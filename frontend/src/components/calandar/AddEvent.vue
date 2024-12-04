@@ -108,7 +108,7 @@ export default {
         if (newValue.allDay) {
           this.startTime = null;
           this.endTime = null;
-          this.endDate = this.startDate;
+          this.endDate = null;
         }
       }
     }
@@ -119,7 +119,7 @@ export default {
         return !this.newEvent.allDay ? this.startDate : this.endDate;
       },
       set(value) {
-        if (this.newEvent.allDay) {
+        if (!this.newEvent.allDay) {
           this.startDate = value;
         } else {
           this.endDate = value;
@@ -140,7 +140,6 @@ export default {
           this.endDate || this.startDate, 
           this.endTime
         ));
-        console.log(this.newEvent)
 
         this.$emit('add-event', { ...this.newEvent });
         this.closeDialog();
