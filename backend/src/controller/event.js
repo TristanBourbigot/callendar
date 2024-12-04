@@ -30,8 +30,8 @@ export async function createEvent(userEmail, eventTitle, eventDescription, event
         allDay: allDay,
     });
 
-    await eventRepository.insert(event);
-    return true;
+    let e = await eventRepository.insert(event);
+    return e;
 }
 
 export async function deleteEvent(eventId){
@@ -42,7 +42,7 @@ export async function deleteEvent(eventId){
     });
 
     if(event){
-        await AppDataSource
+        return await AppDataSource
             .createQueryBuilder()
             .delete()
             .from(Event)

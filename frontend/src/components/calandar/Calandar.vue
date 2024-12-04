@@ -5,12 +5,13 @@ import { VCalendar } from 'vuetify/labs/VCalendar';
 import axios from 'axios';
 import Cookie from 'js-cookie';
 import AddEvent from './AddEvent.vue';
-import { pl } from 'vuetify/locale';
+import VisualizeEvent from './VisualizeEvent.vue';
 
 export default defineComponent({
   components: {
     VCalendar,
-    AddEvent
+    AddEvent,
+    VisualizeEvent
   },
   data() {
     return {
@@ -24,20 +25,20 @@ export default defineComponent({
         weekday: [0, 1, 2, 3, 4, 5, 6],
         value: [new Date()],
         events: [],
-        category: ['Réunion', 'Vacances', 'Congé', 'Voyage', 'Événement', 'Anniversaire', 'Conférence', 'Fête'],
+        category: ['Call','Réunion', 'Vacances', 'Congé', 'Voyage', 'Événement', 'Anniversaire', 'Conférence', 'Fête'],
         colors: {
-        Réunion: '#1E88E5', // blue
-        Vacances: '#3949AB', // indigo
-        Congé: '#5E35B1', // deep-purple
-        Voyage: '#00ACC1', // cyan
-        Événement: '#43A047', // green
-        Anniversaire: '#FB8C00', // orange
-        Conférence: '#757575', // grey darken-1
-        Fête: '#D81B60' // pink
+          Call: '#FFFFFF',  // white
+          Réunion: '#1E88E5', // blue
+          Vacances: '#3949AB', // indigo
+          Congé: '#5E35B1', // deep-purple
+          Voyage: '#00ACC1', // cyan
+          Événement: '#43A047', // green
+          Anniversaire: '#FB8C00', // orange
+          Conférence: '#757575', // grey darken-1
+          Fête: '#D81B60' // pink
         },
-        titles: ['Réunion', 'Vacances', 'Congé', 'Voyage', 'Événement', 'Anniversaire', 'Conférence', 'Fête'],
         newEventDialog: false,
-        eventViewEditDialog: false,
+        visualizeEventDialog: false,
         selectedEvent: null,
         adapter: useDate(),
     };
@@ -55,9 +56,10 @@ export default defineComponent({
             this.events = eventsList.map((event) => ({
                 ...event,
                 end: new Date(event.end),
-                start: new Date(event.startDate),
+                start: new Date(event.start),
                 color: this.colors[event.category]
             }));
+            console.log(this.events)
         })
         .catch(error => {
             console.error('Error fetching events:', error);
@@ -71,10 +73,10 @@ export default defineComponent({
         console.log(event)
         axios.post(import.meta.env.VITE_API_URL + '/event/createEvent/', {
             title: event.title,
-            description: 'event.description',
+            description: event.description,
             start: event.start,
             end: event.end,
-            place: 'event.place',
+            place: event.place,
             category: event.category,
             allDay: event.allDay
         }, {
@@ -84,6 +86,7 @@ export default defineComponent({
         })
         .then(response => {
             this.getEvents();
+            this.newEventDialog = false;
         })
         .catch(error => {
             console.error('Error adding event:', error);
@@ -92,29 +95,29 @@ export default defineComponent({
 
     viewEvent(event) {
       this.selectedEvent = { ...event };
-      this.eventViewEditDialog = true;
+      this.visualizeEventDialog = true;
     },
 
-    updateEvent() {
-      const index = this.events.findIndex(e => e.id === this.selectedEvent.id);
-      if (index !== -1) {
-        this.events[index] = { ...this.selectedEvent };
-        this.eventViewEditDialog = false;
-      }
+    deleteEvent(event) {
+      axios.delete(`${import.meta.env.VITE_API_URL}/event/deleteEvent/${event.id}`, {
+        headers: {
+          Authorization: `Bearer ${Cookie.get('jwt')}`
+        }
+      })
+      .then((event) => {
+        this.getEvents();
+        this.visualizeEventDialog = false;
+      })
+      .catch(error => {
+        console.error('Error deleting event:', error);
+      });
     },
 
-    deleteEvent() {
-      const index = this.events.findIndex(e => e.id === this.selectedEvent.id);
-      if (index !== -1) {
-        this.events.splice(index, 1);
-        this.eventViewEditDialog = false;
-      }
-    },
     updateDatePickerModel(newValue) {
       if (!Array.isArray(newValue)) {
-        this.value = [newValue]; // Transforme en tableau
+        this.value = [newValue];
       } else {
-        this.value = newValue; // Garde le tableau intact
+        this.value = newValue; 
       }
     }
   },
@@ -128,8 +131,6 @@ export default defineComponent({
 });
 </script>
 
-
-
 <template>
   <v-layout>
     <v-navigation-drawer
@@ -138,6 +139,11 @@ export default defineComponent({
       permanent
       class="pa-4 fixed"
     >
+     <v-img
+        class="mx-auto my-5"
+        max-width="228"
+        src="/src/assets/logo.png"
+     ></v-img>
       <v-sheet class="mb-4">
         <v-date-picker
           v-model="value"
@@ -187,57 +193,17 @@ export default defineComponent({
       </v-sheet>
     </v-main>
 
-
     <AddEvent
       v-model:dialog="newEventDialog"
       @add-event="addEvent"
       :categories="category"
     />
 
-    <!-- Visualisation/Édition d'événement -->
-    <v-dialog v-model="eventViewEditDialog" max-width="500">
-      <v-card v-if="selectedEvent">
-        <v-card-title>Détails de l'événement</v-card-title>
-        <v-card-text>
-          <v-text-field
-            v-model="selectedEvent.title"
-            label="Titre de l'événement"
-            required
-          ></v-text-field>
-          
-          <v-row>
-            <v-col cols="6">
-              <v-date-picker
-                v-model="selectedEvent.start"
-                label="Date de début"
-              ></v-date-picker>
-            </v-col>
-            <v-col cols="6">
-              <v-date-picker
-                v-model="selectedEvent.end"
-                label="Date de fin"
-              ></v-date-picker>
-            </v-col>
-          </v-row>
-
-          <v-switch
-            v-model="selectedEvent.allDay"
-            label="Événement de toute la journée"
-          ></v-switch>
-
-          <v-color-picker
-            v-model="selectedEvent.color"
-            hide-inputs
-            class="mt-4"
-          ></v-color-picker>
-        </v-card-text>
-        <v-card-actions>
-          <v-btn color="error" @click="deleteEvent">Supprimer</v-btn>
-          <v-spacer></v-spacer>
-          <v-btn @click="eventViewEditDialog = false">Annuler</v-btn>
-          <v-btn color="primary" @click="updateEvent">Enregistrer</v-btn>
-        </v-card-actions>
-      </v-card>
-    </v-dialog>
+    <VisualizeEvent
+      v-model:dialog="visualizeEventDialog"
+      :event="selectedEvent"
+      :categories="category"
+      @delete-event="deleteEvent"
+    />
   </v-layout>
 </template>

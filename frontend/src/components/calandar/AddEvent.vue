@@ -1,5 +1,5 @@
 <template>
-    <v-dialog v-model="this.dialog" max-width="500">
+    <v-dialog v-model="this.dialog" max-width="500"  @keydown.esc="closeDialog()">
       <v-card>
         <v-card-title>Créer un nouvel événement</v-card-title>
         <v-card-text>
@@ -8,6 +8,18 @@
             label="Titre de l'événement"
             :rules="mandatory"
             required
+          ></v-text-field>
+          
+          <v-textarea
+            v-model="newEvent.description"
+            label="Description de l'événement"
+            rows="3"
+            auto-grow
+          ></v-textarea>
+          
+          <v-text-field
+            v-model="newEvent.place"
+            label="Lieu de l'événement"
           ></v-text-field>
           
           <v-select
@@ -20,7 +32,7 @@
 
           <v-switch
             v-model="newEvent.allDay"
-            label="Événement de toute la journée"
+            label="Événement sur plusieurs journées"
           ></v-switch>
 
           <v-row>
@@ -90,12 +102,13 @@ export default {
       endTime: null,
       newEvent: {
         title: '',
+        description: '',
+        place: '',
         start: null,
         end: null,
         category: null,
         allDay: false,
-      },
-      
+      },      
       mandatory: [
         value => !!value || 'Obligatoire'
       ],
@@ -135,7 +148,7 @@ export default {
     createEvent() {
       if (this.newEvent.title && this.startDate) {
         // Merge date and time
-        this.newEvent.start = new Date (this.mergeDateTime(this.startDate, this.startTime));
+        this.newEvent.start = new Date(this.mergeDateTime(this.startDate, this.startTime));
         this.newEvent.end = new Date(this.mergeDateTime(
           this.endDate || this.startDate, 
           this.endTime
@@ -147,23 +160,14 @@ export default {
     },
     mergeDateTime(date, time) {
       if (!date) return null;
-      
-      // If all-day event, return just the date
-      if (this.newEvent.allDay) {
-        return date;
-      }
-      
-      // If no time provided, use midnight
-      if (!time) {
-        time = '00:00';
-      }
-      
-      // Combine date and time
+
       return `${date}T${time}`;
     },
     resetForm() {
       this.newEvent = {
         title: '',
+        description: '',
+        place: '',
         start: null,
         end: null,
         category: null,
@@ -173,7 +177,6 @@ export default {
       this.startTime = null;
       this.endDate = null;
       this.endTime = null;
-      
     },
   },
 };
