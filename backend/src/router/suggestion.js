@@ -1,6 +1,7 @@
 import express from 'express';
-import {CustomError} from "../middleware/CustomError";
-import {asyncHandler} from "../utils/asyncHandler";
+import {CustomError} from "../middleware/CustomError.js";
+import {asyncHandler} from "../utils/asyncHandler.js";
+import {checkDates} from "../middleware/dates.js";
 import {
     approveSuggestion,
     createSuggestion,
@@ -8,8 +9,11 @@ import {
     suggestionByID,
     suggestions
 } from "../controller/suggestion.js";
+import {auth} from "../middleware/auth.js";
 
 export const suggestionRouter = express.Router();
+
+suggestionRouter.use(auth);
 
 suggestionRouter.get('/', asyncHandler(async(req, res) => {
     let suggestionsList = await suggestions();
@@ -26,19 +30,19 @@ suggestionRouter.get('/id/:id', asyncHandler(async (req, res) => {
 }));
 
 suggestionRouter.post('/createSuggestion/', asyncHandler(async(req, res) => {
-    if(req.user.dataValues.email){
+    if(req.user[0].email){
         if(req.body.title){
             if(req.body.description){
                 if(req.body.start){
                     if(req.body.end){
-                        if(req.body.end > req.body.start){
+                        if(checkDates(req.body.start, req.body.end)){
                             if(req.body.place){
                                 if(req.body.category){
                                     if(req.body.allDay){
                                         if(req.body.maximalApprovalDate){
-                                            if(req.body.maximalApprovalDate > req.body.start){
-                                                await createSuggestion(req.user.dataValues.email, req.body.title, req.body.description, req.body.start, req.body.end, req.body.place, req.body.category, req.body.allDay, req.body.maximalApprovalDate);
-                                                res.status(200);
+                                            if(checkDates(req.body.maximalApprovalDate, req.body.start)){
+                                                let result = await createSuggestion(req.user[0].email, req.body.title, req.body.description, req.body.start, req.body.end, req.body.place, req.body.category, req.body.allDay, req.body.maximalApprovalDate);
+                                                res.status(200).json(result);
                                             }else{
                                                 throw new CustomError(400, "router/suggestion.js - POST - /createSuggestion/ - The maximal approval date of the suggestion must be earlier than the beginning of the suggestion.");
                                             }
@@ -81,7 +85,7 @@ suggestionRouter.post('/approveSuggestion/:id/', asyncHandler(async (req, res) =
 
 suggestionRouter.delete('/deleteEvent/:id', asyncHandler(async(req, res) => {
     if(req.params.id){
-        await deleteSuggestion(req.params.id);
-        res.status(200);
+        let result = await deleteSuggestion(req.params.id);
+        res.status(200).json(result);
     }
 }));

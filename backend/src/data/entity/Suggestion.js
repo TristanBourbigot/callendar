@@ -27,6 +27,9 @@ export const Suggestion = new EntitySchema({
         category: {
             type: 'varchar'
         },
+        allDay: {
+            type: 'boolean'
+        },
         maximalApprovalDate: {
             type: 'varchar'
         }

@@ -1,6 +1,7 @@
 import {AppDataSource} from "../data/connection.js";
 import {Suggestion} from "../data/entity/Suggestion.js";
 import {CustomError} from "../middleware/CustomError.js";
+import {checkDates} from "../middleware/dates.js";
 
 const suggestionRepository = AppDataSource.getRepository("Suggestion");
 const eventRepository = AppDataSource.getRepository("Event");
@@ -18,7 +19,7 @@ export async function suggestionByID(suggestionID) {
 }
 
 export async function createSuggestion(userEmail, suggestionTitle, suggestionDescription, suggestionStart, suggestionEnd, suggestionPlace, suggestionCategory, suggestionAllDay, suggestionMaximumApprovalDate){
-    let suggestion = {
+    const suggestion = suggestionRepository.create({
         title: suggestionTitle,
         description: suggestionDescription,
         start: suggestionStart,
@@ -28,14 +29,10 @@ export async function createSuggestion(userEmail, suggestionTitle, suggestionDes
         allDay: suggestionAllDay,
         maximalApprovalDate: suggestionMaximumApprovalDate,
         email: userEmail
-    };
+    });
 
-    suggestionRepository
-        .save(suggestion)
-        .then(function (){
-            console.log('>>> INFO : Suggestion successfully inserted.');
-        });
-
+    await suggestionRepository.insert(suggestion);
+    return true;
 }
 
 export async function approveSuggestion(suggestionID){
@@ -45,8 +42,10 @@ export async function approveSuggestion(suggestionID){
 
     if(suggestion){
         let currentDate = new Date();
-        if(suggestion.maximalApprovalDate <= currentDate){
-            let event = {
+        if(checkDates(currentDate, suggestion.maximalApprovalDate)){
+
+            console.log(suggestion.allDay);
+            const event = eventRepository.create({
                 title: suggestion.title,
                 description: suggestion.description,
                 start: suggestion.start,
@@ -55,13 +54,9 @@ export async function approveSuggestion(suggestionID){
                 category: suggestion.category,
                 allDay: suggestion.allDay,
                 email: suggestion.email
-            };
+            });
 
-            eventRepository
-                .save(event)
-                .then(function(){
-                    console.log('>>> INFO : Event successfully created.');
-                });
+            await eventRepository.insert(event);
 
             await AppDataSource
                 .createQueryBuilder()
@@ -72,6 +67,8 @@ export async function approveSuggestion(suggestionID){
                 .then(function(){
                     console.log('>>> INFO : Suggestion successfully deleted.')
                 });
+
+            return true;
         }else{
             throw new CustomError(400, "controller/suggestion.js - approveSuggestion - Can't approve given suggestion. It is too late to approve it.")
         }

@@ -34,8 +34,8 @@ eventRouter.post('/createEvent/',asyncHandler (async(req, res) => {
                             if(req.body.place){
                                 if(req.body.category){
                                     if(req.body.allDay){
-                                        await createEvent(req.user[0].email, req.body.title, req.body.description, req.body.start, req.body.end, req.body.place, req.body.category, req.body.allDay);
-                                        res.status(200);
+                                        let success = await createEvent(req.user[0].email, req.body.title, req.body.description, req.body.start, req.body.end, req.body.place, req.body.category, req.body.allDay);
+                                        res.status(200).json(success);
                                     }else{
                                         throw new CustomError(400, "router/events.js - POST - /createEvent/ - Missing AllDay for the event.")
                                     }
@@ -63,7 +63,6 @@ eventRouter.post('/createEvent/',asyncHandler (async(req, res) => {
     }else{
         throw new CustomError(400, "router/event.js - POST - /createEvent/ - Can't get User email.");
     }
-
 }));
 
 eventRouter.delete('/deleteEvent/:eventId', asyncHandler(async (req,res) => {

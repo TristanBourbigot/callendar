@@ -30,7 +30,7 @@ export const Event = new EntitySchema ({
         },
         allDay: {
             type: 'boolean'
-        }
+        },
     },
     relations: {
         users: {
