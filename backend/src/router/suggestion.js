@@ -1,6 +1,6 @@
 import express from 'express';
-import {CustomError} from "../middleware/CustomError";
-import {asyncHandler} from "../utils/asyncHandler";
+import {CustomError} from "../middleware/CustomError.js";
+import {asyncHandler} from "../utils/asyncHandler.js";
 import {
     approveSuggestion,
     createSuggestion,

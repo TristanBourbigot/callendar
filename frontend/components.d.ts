@@ -7,8 +7,11 @@ export {}
 /* prettier-ignore */
 declare module 'vue' {
   export interface GlobalComponents {
+    Add: typeof import('./src/components/calandar/add.vue')['default']
+    Addevent: typeof import('./src/components/calandar/Addevent.vue')['default']
+    AddEvent: typeof import('./src/components/calandar/AddEvent.vue')['default']
+    Addevnt: typeof import('./src/components/calandar/Addevnt.vue')['default']
     Calandar: typeof import('./src/components/calandar/Calandar.vue')['default']
-    DateRangePicker: typeof import('./src/components/calandar/DateRangePicker.vue')['default']
     LoginForm: typeof import('./src/components/login/LoginForm.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']

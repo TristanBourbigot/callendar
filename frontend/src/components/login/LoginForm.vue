@@ -20,6 +20,7 @@
                 axios.post(import.meta.env.VITE_API_URL + '/user/login', {email: this.user.email, password: this.user.password})
                     .then(response => {
                         document.cookie = `jwt=${response.data.token};max-age=7200;path=/`;
+                        document.cookie = `email=${this.user.email};max-age=7200;path=/`;
                         window.location.href = '/';
                 }).catch(error => {
                     this.errorMessages = true;
