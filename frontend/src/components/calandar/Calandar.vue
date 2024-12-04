@@ -93,10 +93,6 @@ export default defineComponent({
         .catch(error => {
             console.error('Error adding event:', error);
         });
-    //   this.events.push({
-    //     id: this.events.length,
-    //     ...event,
-    //   });
     },
 
     viewEvent(event) {
