@@ -148,7 +148,7 @@ export default defineComponent({
     },
 
     deleteEvent(event) {
-      axios.delete(`${import.meta.env.VITE_API_URL}/event/deleteEvent/${event.id}`, {
+      axios.delete(`${import.meta.env.VITE_API_URL}/event/${event.id}`, {
         headers: {
           Authorization: `Bearer ${Cookie.get('jwt')}`
         }
