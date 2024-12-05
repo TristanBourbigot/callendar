@@ -9,6 +9,10 @@ declare module 'vue' {
   export interface GlobalComponents {
     AddEvent: typeof import('./src/components/calandar/AddEvent.vue')['default']
     Calandar: typeof import('./src/components/calandar/Calandar.vue')['default']
+    CreateGroup: typeof import('./src/components/calandar/CreateGroup.vue')['default']
+    GroupManage: typeof import('./src/components/calandar/groupManage.vue')['default']
+    GroupManagement: typeof import('./src/components/calandar/GroupManagement.vue')['default']
+    GroupManagent: typeof import('./src/components/calandar/GroupManagent.vue')['default']
     LoginForm: typeof import('./src/components/login/LoginForm.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']

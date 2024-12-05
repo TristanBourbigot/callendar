@@ -4,6 +4,7 @@ import {AppDataSource} from './data/connection.js';
 import {userRouter} from "./router/user.js";
 import {eventRouter} from "./router/event.js";
 import {suggestionRouter} from "./router/suggestion.js";
+import {groupRouter} from "./router/groups.js";
 
 const app = express();
 const port = 2999;
@@ -31,6 +32,7 @@ app.get('/', function(req, res){
 app.use("/api/v1/user", userRouter);
 app.use("/api/v1/event", eventRouter);
 app.use("/api/v1/suggestion", suggestionRouter);
+app.use("/api/v1/groups", groupRouter)
 
 console.log(`>>> INFO : Listening on port ${port}`);
 app.listen(port);

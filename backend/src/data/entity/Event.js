@@ -1,23 +1,20 @@
 import {EntitySchema} from 'typeorm';
-import {User} from "./User.js";
 
-export const Event = new EntitySchema ({
+export const Event = new EntitySchema({
     name: 'Event',
     tableName: 'events',
     columns: {
         id: {
-            primary: true,
             type: 'int',
-            generated: true,
+            primary: true,
+            generated: true
         },
         title: {
             type: 'varchar',
         },
         description: {
             type: 'text',
-        },
-        place: {
-            type: 'varchar',
+            nullable: true
         },
         start: {
             type: 'varchar',
@@ -25,19 +22,25 @@ export const Event = new EntitySchema ({
         end: {
             type: 'varchar',
         },
+        place: {
+            type: 'varchar',
+        },
         category: {
-            type: 'varchar'
+            type: 'varchar',
         },
         allDay: {
-            type: 'boolean'
-        },
+            type: 'boolean',
+        }
     },
     relations: {
-        users: {
+        group: {
             type: 'many-to-one',
-            target: 'User',
-            joinColumn: {name: 'email'},
-            onDelete: 'CASCADE'
+            target: 'Groups',
+            joinColumn: {
+                name: 'group_id',
+                referencedColumnName: 'id'
+            },
+            nullable: true
         }
     }
 });

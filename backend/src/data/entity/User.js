@@ -18,4 +18,22 @@ export const User = new EntitySchema({
             type: 'varchar',
         }
     },
+    relations: {
+        groups: {
+            type: 'many-to-many',
+            target: 'Groups',
+            inverseSide: 'users',
+            joinTable: {
+                name: 'user_groups',
+                joinColumn: {
+                    name: 'user_email',
+                    referencedColumnName: 'email'
+                },
+                inverseJoinColumn: {
+                    name: 'group_id',
+                    referencedColumnName: 'id'
+                }
+            }
+        }
+    }
 });

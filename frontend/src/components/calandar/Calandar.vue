@@ -6,15 +6,21 @@ import axios from 'axios';
 import Cookie from 'js-cookie';
 import AddEvent from './AddEvent.vue';
 import VisualizeEvent from './VisualizeEvent.vue';
+import GroupManagement from './GroupManagement.vue';
+import CreateGroup from './CreateGroup.vue';
 
 export default defineComponent({
   components: {
     VCalendar,
     AddEvent,
-    VisualizeEvent
+    VisualizeEvent,
+    GroupManagement,
+    CreateGroup
   },
   data() {
     return {
+        groups: [],
+        group: 0,
         drawerOpen: true,
         type: 'month',
         types: [
@@ -44,8 +50,50 @@ export default defineComponent({
     };
   },
   methods: {
+    getGroups() {
+        axios.get(import.meta.env.VITE_API_URL + '/groups/user',{
+            headers: {
+                Authorization: `Bearer ${Cookie.get('jwt')}`
+            }
+        })
+        .then(response => {
+            console.log(response)
+            const groupsListe = response.data;
+            if(!groupsListe || groupsListe.length == 0){
+                axios.post(import.meta.env.VITE_API_URL + '/groups/', {
+                    groupName : "Mon groupe"
+                },{
+                    headers: {
+                        Authorization: `Bearer ${Cookie.get('jwt')}`
+                    }
+                })
+                .then(response => {
+                    console.log(response)
+                    this.groups = response.data;
+                    this.group = this.group[0].id;
+                    this.getEvents({
+                        start: this.adapter.startOfDay(this.adapter.startOfMonth(new Date())),
+                        end: this.adapter.endOfDay(this.adapter.endOfMonth(new Date()))
+                    });
+                })
+                .catch(error => {
+                    console.error('Error fetching events:', error);
+                });
+            }else{
+                this.groups = groupsListe;
+                this.group = this.groups[0].id;
+                this.getEvents({
+                    start: this.adapter.startOfDay(this.adapter.startOfMonth(new Date())),
+                    end: this.adapter.endOfDay(this.adapter.endOfMonth(new Date()))
+                });
+            }
+        })
+        .catch(error => {
+            console.error('Error fetching events:', error);
+        });
+    },
     getEvents() {
-        axios.get(import.meta.env.VITE_API_URL + '/event',{
+        axios.get(import.meta.env.VITE_API_URL + '/event/group/'+this.group,{
             headers: {
                 Authorization: `Bearer ${Cookie.get('jwt')}`
             }
@@ -71,7 +119,8 @@ export default defineComponent({
 
     addEvent(event) {
         console.log(event)
-        axios.post(import.meta.env.VITE_API_URL + '/event/createEvent/', {
+        axios.post(import.meta.env.VITE_API_URL + '/event/', {
+            groupId: this.group,
             title: event.title,
             description: event.description,
             start: event.start,
@@ -123,10 +172,7 @@ export default defineComponent({
   },
 
   mounted() {
-    this.getEvents({
-      start: this.adapter.startOfDay(this.adapter.startOfMonth(new Date())),
-      end: this.adapter.endOfDay(this.adapter.endOfMonth(new Date()))
-    });
+    this.getGroups();
   }
 });
 </script>
@@ -135,7 +181,7 @@ export default defineComponent({
   <v-layout>
     <v-navigation-drawer
       v-model="drawerOpen"
-      width="340"
+      width="350"
       permanent
       class="pa-4 fixed"
     >
@@ -144,6 +190,24 @@ export default defineComponent({
         max-width="228"
         src="/src/assets/logo.png"
      ></v-img>
+
+     <div class="d-flex">
+        <v-select
+            label="Groupe"
+            :items="groups"
+            item-title='name'
+            item-value='id'
+            v-model="group"
+            @update:model-value="getEvents"
+        />
+
+        <v-col cols="auto">
+            <GroupManagement :groupId="group" @get-groups="getGroups"/> 
+        </v-col>
+    </div>
+    
+    <CreateGroup @group-created="getGroups" />
+
       <v-sheet class="mb-4">
         <v-date-picker
           v-model="value"
